@@ -14,9 +14,16 @@ function cognitoStub() {
   };
 }
 
+function byUserUuid(userUuid){
+  return (row)=> {return (row.user_uuid==userUuid)};
+}
+
+
 describe('API Tests - DB integration', () => {
   beforeEach(async function() {
     await People.destroy({ truncate: true });
+    await People.create({user_uuid: 'james-123', first_name: 'James', surname: 'Brown'});
+    await People.create({user_uuid: 'aretha-123', first_name: 'Aretha', surname: 'Franklin'});
   });
   after(() => {
     sequelize.close();
@@ -42,6 +49,27 @@ describe('API Tests - DB integration', () => {
       });
       expect(person.first_name).to.equal('Blue');
       expect(person.surname).to.equal('Printy');
+    });
+  });
+  context('GET', () => {
+    it('Index - should get a list', async () => {
+      const server = require('../../server')(cognitoStub());
+      const res = await request(server)
+        .get('/api/people?token=itsstubbed')
+        .set('Content-Type', 'application/json')
+        .set('Accept', 'application/json')
+        .expect(200);
+      expect(res.body.length).to.equal(2);
+      expect(res.body.find(byUserUuid('james-123')).first_name).to.eql('James')
+    });
+    it('Show - should get a single row', async () => {
+      const server = require('../../server')(cognitoStub());
+      const res = await request(server)
+        .get('/api/people/aretha-123?token=itsstubbed')
+        .set('Content-Type', 'application/json')
+        .set('Accept', 'application/json')
+        .expect(200);
+      expect(res.body.first_name).to.eql('Aretha')
     });
   });
 });

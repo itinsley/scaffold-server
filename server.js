@@ -71,8 +71,9 @@ const server = function server(cognitoExpress) {
       res.send(`You are: ${JSON.stringify(res.locals.user)}`);
     }),
   );
+  authenticatedRoute.get('/people/:user_uuid', PeopleController.show);
+  authenticatedRoute.get('/people', PeopleController.index);
   authenticatedRoute.post('/people', PeopleController.create);
-
 
   // Unauthenticated routes
   app.get('/customers/', (req, res) => {

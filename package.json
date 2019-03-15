@@ -27,6 +27,7 @@
     "start-dev": "echo \"Starting with nodemon..\" && nodemon index.js",
     "pretest": "eslint --ignore-path .eslintignore .",
     "test": "mocha 'tests/**/*.js' --exit",
+    "testnolint": "mocha 'tests/**/*.js' --exit",
     "start": "echo \"Starting server..\" && node index.js",
     "prestart": "node checkenv.js"
   },
