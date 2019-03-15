@@ -13,6 +13,7 @@ module.exports = {
     ecmaVersion: 2018,
   },
   rules: {
-    "strict": "off"
+    "strict": "off",
+    "no-unused-vars": "off"
   },
 };

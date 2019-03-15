@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const HandlePromiseError = require('./src/lib/HandlePromiseError');
 const ExpressErrorMiddleware = require('./src/lib/ExpressErrorMiddleware');
+const PeopleController = require('./src/controllers/PeopleController');
 
 const server = function server(cognitoExpress) {
   const app = express();
@@ -66,11 +67,12 @@ const server = function server(cognitoExpress) {
   });
 
   authenticatedRoute.get(
-    '/whoami',
-    HandlePromiseError((req, res) => {
+    '/whoami', HandlePromiseError((req, res) => {
       res.send(`You are: ${JSON.stringify(res.locals.user)}`);
     }),
   );
+  authenticatedRoute.post('/people', PeopleController.create);
+
 
   // Unauthenticated routes
   app.get('/customers/', (req, res) => {
