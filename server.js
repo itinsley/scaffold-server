@@ -3,11 +3,15 @@ const HandlePromiseError = require('./src/lib/HandlePromiseError');
 const ExpressErrorMiddleware = require('./src/lib/ExpressErrorMiddleware');
 const express = require("express");
 var cors = require('cors')
-const server = function () {
 
+const server = function (cognitoExpress) {
 	const app = express()
+
 	//Body parser
 	app.use(express.json())
+
+	//Separate router for authenticated routes
+	const	authenticatedRoute = express.Router(); 
 
 	/////////////////////////////
 	//
@@ -15,8 +19,31 @@ const server = function () {
 	//
 	/////////////////////////////
 	app.use(cors())
+	app.use("/api", authenticatedRoute);
   app.enable('trust proxy'); //Allows correct protocol to be used when constructing URI's.
 
+	//Our middleware that authenticates all APIs under our 'authenticatedRoute' Router
+	authenticatedRoute.use(function (req, res, next) {
+		let accessTokenFromClient = req.query['token'];
+		if (!accessTokenFromClient) {
+			return res.status(401).send(
+				{errors: [{element:'token', message: "Access Token missing from query"}]
+			});
+		}
+		
+		cognitoExpress.validate(accessTokenFromClient, function (err, response) {
+			if (err) {
+				return res.status(401).send(
+					{errors: [{element:'token', message: err}]
+				});				
+			} else{
+				//Store Cognito user 
+				res.locals.user = response;
+				next();
+			}
+		});
+	});
+	
 	app.get('/', function (req, res) {
 		res.send(JSON.stringify(
 			{ 
@@ -33,6 +60,8 @@ const server = function () {
     ))
 	});
 
+	authenticatedRoute.get("/whoami", HandlePromiseError((req, res)=>{res.send("You are: " + JSON.stringify(res.locals.user))}));
+	
 	//Unauthenticated routes
 	app.get('/customers/', (req, res)=>{res.send("OK!")})
 
