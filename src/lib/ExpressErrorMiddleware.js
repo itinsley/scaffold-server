@@ -1,7 +1,7 @@
-module.exports = (err, req, res, next) => {
-	console.log("Unhandled Exception", err)
-	const errJson = { errors:
-    { entity: ["Unhandled exception occurred."]}
-  }
-	res.status(500).send(errJson)
-}
+const log = require('loglevel');
+
+module.exports = (err, req, res) => {
+  log.error('Unhandled Exception', err);
+  const errJson = { errors: { entity: ['Unhandled exception occurred.'] } };
+  res.status(500).send(errJson);
+};

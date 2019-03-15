@@ -14,9 +14,14 @@
     "loglevel": "^1.6.1",
     "nodemon": "^1.18.10"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "eslint": "^5.15.1",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.16.0"
+  },
   "scripts": {
     "start-dev": "echo \"Starting with nodemon..\" && nodemon index.js",
+    "pretest": "eslint --ignore-path .eslintignore .",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "echo \"Starting server..\" && node index.js",
     "prestart": "node checkenv.js"
