@@ -42,6 +42,12 @@ const server = function server(cognitoExpress) {
           .send({ errors: [{ element: 'token', message: err }] });
       }
 
+      if (response['custom:isRoot'] !== 1) {
+        return res
+          .status(401)
+          .send({ errors: [{ element: 'token', message: 'You do not have the necessary privileges' }] });
+      }
+
       // Store Cognito user
       res.locals.user = response;
       next();

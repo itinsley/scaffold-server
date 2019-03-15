@@ -6,9 +6,10 @@ const People = require('../../src/models/People');
 const { expect } = chai;
 
 function cognitoStub() {
+  const response = {'custom:isRoot':1};
   return {
     validate: (token, callback) => {
-      callback(null, { stubbed: true });
+      callback(null, response);
       return null;
     },
   };
