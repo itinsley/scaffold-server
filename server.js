@@ -2,9 +2,6 @@
 
 const express = require('express');
 const cors = require('cors');
-const jwt = require('express-jwt');
-const jwtAuthz = require('express-jwt-authz');
-const jwksRsa = require('jwks-rsa');
 const morgan = require('morgan');
 const HandlePromiseError = require('./src/lib/HandlePromiseError');
 const ExpressErrorMiddleware = require('./src/lib/ExpressErrorMiddleware');
@@ -12,24 +9,7 @@ const PeopleController = require('./src/controllers/PeopleController');
 const CurrentUserController = require('./src/controllers/CurrentUserController');
 require('dotenv').config();
 
-const checkJwt = jwt({
-  // Dynamically provide a signing key based on the kid in the header and the singing keys provided by the JWKS endpoint.
-  secret: jwksRsa.expressJwtSecret({
-    cache: true,
-    rateLimit: true,
-    jwksRequestsPerMinute: 5,
-    jwksUri: `https://${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`,
-  }),
-
-  // Validate the audience and the issuer.
-  audience: process.env.AUTH0_AUDIENCE,
-  issuer: `https://${process.env.AUTH0_DOMAIN}/`,
-  algorithms: ['RS256'],
-});
-
-const checkScopes = jwtAuthz(['read:messages']);
-
-const server = function server() {
+const server = function server(checkJwt, checkScopes) {
   const app = express();
 
   // Body parser

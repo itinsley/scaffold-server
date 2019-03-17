@@ -19,6 +19,11 @@ function byUserUuid(userUuid){
   return (row)=> {return (row.user_uuid==userUuid)};
 }
 
+function serverUnauthenticated(){
+  const checkJwtStub=()=>{};
+  const checkScopesStub=()=>{};  
+  return require('../../server')(checkJwtStub, checkScopesStub );
+}
 
 describe('API Tests - DB integration', () => {
   beforeEach(async function() {
@@ -38,7 +43,7 @@ describe('API Tests - DB integration', () => {
         surname: 'Printy',
       };
 
-      const server = require('../../server')(cognitoStub());
+      const server = serverUnauthenticated();
       const res = await request(server)
         .post('/api/people?token=itsstubbed')
         .set('Content-Type', 'application/json')
@@ -54,7 +59,7 @@ describe('API Tests - DB integration', () => {
   });
   context('GET', () => {
     it('Index - should get a list', async () => {
-      const server = require('../../server')(cognitoStub());
+      const server = serverUnauthenticated();
       const res = await request(server)
         .get('/api/people?token=itsstubbed')
         .set('Content-Type', 'application/json')
@@ -64,7 +69,7 @@ describe('API Tests - DB integration', () => {
       expect(res.body.find(byUserUuid('james-123')).first_name).to.eql('James')
     });
     it('Show - should get a single row', async () => {
-      const server = require('../../server')(cognitoStub());
+      const server = serverUnauthenticated();
       const res = await request(server)
         .get('/api/people/aretha-123?token=itsstubbed')
         .set('Content-Type', 'application/json')
