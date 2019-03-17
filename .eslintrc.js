@@ -14,6 +14,7 @@ module.exports = {
   },
   rules: {
     "strict": "off",
-    "no-unused-vars": "off"
+    "no-unused-vars": "off",
+    "max-len": "off"
   },
 };
